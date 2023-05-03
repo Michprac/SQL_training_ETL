@@ -124,5 +124,19 @@ JOIN PortfolioProject..CovidVaccinations vac
 SELECT *, (RollingPeopleVaccinated/Population)*100 
 from #PercentPopulationVaccinated
 
---
-CREATE 
+
+-- CREATING VIEW TO STORE DATA FOR LATER VISUALIZATIONS
+CREATE VIEW PercentPopulationVaccinated as
+SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations
+, SUM(cast(vac.new_vaccinations as float)) OVER (PARTITION BY dea.location ORDER BY dea.location, dea.Date ROWS UNbOUNDED PRECEDING) as RollingPeopleVaccinated 
+--, (vac.new_vaccinations)
+FROM PortfolioProject..CovidDeaths dea
+JOIN PortfolioProject..CovidVaccinations vac
+	ON dea.location = vac.location and 
+	dea.date = vac.date
+where dea.continent is not null
+--order by 2,3
+
+
+SELECT *
+FROm PercentPopulationVaccinated
